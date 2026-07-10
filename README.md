@@ -8,6 +8,10 @@ to 1-bit black & white so gradients still read well, and streams it over Bluetoo
 It ships as a drag-and-drop Mac app and as a command-line tool, both built on a
 clean-room implementation of the documented MXW01 protocol — no vendored third-party code.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="The ThermalPrint app: a photo dithered to 1-bit black &amp; white in the preview, with darkness, brightness, and contrast sliders." width="440">
+</p>
+
 ## What's in the box
 
 - **`ThermalPrint.app`** — a drag-and-drop Mac app. Drop a photo on it (or double-click
@@ -54,7 +58,7 @@ Options:
 
 | Flag | Meaning |
 |------|---------|
-| `-i, --intensity N` | Darkness 0–255 (default 192). Lower it if prints smear; raise toward 255 if faint. |
+| `-i, --intensity N` | Darkness 0–255 (default 175). Lower it if prints smear; raise toward 255 if faint. |
 | `--no-dither` | Hard black/white threshold instead of dithering (good for line art / text). |
 | `--rotate` | Rotate 180°. |
 | `--invert` | Swap black/white. |
