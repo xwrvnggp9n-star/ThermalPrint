@@ -10,7 +10,7 @@ Usage:
 
 Options:
   -d, --device ADDR    Printer BLE address/UUID (else auto-discover by name)
-  -i, --intensity N    Darkness 0-255 (default 93)
+  -i, --intensity N    Darkness 0-255 (default 175)
   --no-dither          Use hard threshold instead of Floyd-Steinberg dithering
   --rotate             Rotate 180 degrees
   --invert             Invert black/white
@@ -155,7 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="mxprint", description="Print to an MXW01 thermal printer.")
     p.add_argument("-d", "--device", help="Printer BLE address/UUID")
     p.add_argument("-i", "--intensity", type=int, default=mxw01.DEFAULT_INTENSITY,
-                   help="Darkness 0-255 (default 93)")
+                   help="Darkness 0-255 (default 175)")
     p.add_argument("--no-dither", action="store_true", help="Hard threshold instead of dithering")
     p.add_argument("--contrast", type=float, default=1.0, help="Contrast multiplier (1.0 = none)")
     p.add_argument("--brightness", type=float, default=1.0, help="Brightness multiplier (1.0 = none)")
