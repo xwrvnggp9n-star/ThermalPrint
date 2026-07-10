@@ -8,6 +8,8 @@ Features:
   - Intensity slider (darkness) and contrast slider
   - Connect / refresh battery + status
   - Print
+  - Full menu bar (About, Help, standard shortcuts)
+  - Auto-update via GitHub Releases (silent daily check + Check for Updates…)
 
 BLE runs on a background asyncio thread; all UI updates are marshalled back to
 the main thread. Bluetooth is only touched on explicit user action (Connect /
@@ -23,18 +25,30 @@ from pathlib import Path
 
 import objc
 from AppKit import (
+    NSAlert, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn,
+    NSAlertStyleInformational, NSAlertStyleWarning,
     NSApp, NSApplication, NSApplicationActivationPolicyRegular,
     NSBackingStoreBuffered, NSBezelStyleRounded, NSBox, NSButton,
-    NSButtonTypeSwitch, NSColor, NSFilenamesPboardType, NSFont, NSImage, NSImageView,
-    NSImageScaleProportionallyUpOrDown, NSMakeRect, NSObject,
-    NSOpenPanel, NSProgressIndicator, NSProgressIndicatorStyleSpinning,
-    NSSlider, NSTextField, NSView, NSWindow,
+    NSButtonTypeSwitch, NSColor, NSEventModifierFlagCommand,
+    NSEventModifierFlagOption, NSFilenamesPboardType, NSFont,
+    NSFontAttributeName, NSForegroundColorAttributeName,
+    NSImage, NSImageLeft, NSImageView,
+    NSImageScaleProportionallyUpOrDown, NSMakeRect, NSMakeSize,
+    NSMenu, NSMenuItem, NSObject,
+    NSOpenPanel, NSPanel, NSProgressIndicator, NSProgressIndicatorStyleSpinning,
+    NSScrollView, NSSlider, NSTextField, NSTextView, NSView,
+    NSViewHeightSizable, NSViewWidthSizable, NSWindow,
     NSWindowStyleMaskTitled, NSWindowStyleMaskClosable,
-    NSWindowStyleMaskMiniaturizable,
+    NSWindowStyleMaskMiniaturizable, NSWorkspace,
 )
-from Foundation import NSData, NSOperationQueue, NSURL, NSPoint
+from Foundation import (
+    NSAttributedString, NSData, NSMutableAttributedString, NSOperationQueue,
+    NSURL, NSPoint,
+)
 
 import mxw01
+import updater
+import version
 
 HERE = Path(__file__).resolve().parent
 
@@ -218,6 +232,9 @@ class AppController(NSObject):
         self.dither = True
         self.connected = False
         self._bw = None          # cached dithered bitmap (re-tinted on darkness change)
+        self.help_panel = None   # lazily created by showHelp:
+        self._update_busy = False  # a check or download is in flight
+        self._spin_count = 0     # overlapping ops share the one spinner
         self._build_window()
         return self
 
@@ -231,6 +248,8 @@ class AppController(NSObject):
         self.window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
             rect, style, NSBackingStoreBuffered, False)
         self.window.setTitle_("ThermalPrint")
+        if hasattr(self.window, "setSubtitle_"):  # macOS 11+
+            self.window.setSubtitle_("MXW01 thermal printer")
         self.window.center()
 
         # Whole-window drop target for image files.
@@ -342,6 +361,14 @@ class AppController(NSObject):
         self.print_btn.setTarget_(self)
         self.print_btn.setAction_("printClicked:")
         self.print_btn.setEnabled_(False)
+        # SF Symbol accent (macOS 11+; guard because symbols can be missing).
+        sym_factory = getattr(
+            NSImage, "imageWithSystemSymbolName_accessibilityDescription_", None)
+        if sym_factory:
+            sym = sym_factory("printer", "Print")
+            if sym:
+                self.print_btn.setImage_(sym)
+                self.print_btn.setImagePosition_(NSImageLeft)
         content.addSubview_(self.print_btn)
 
         # Status line + spinner (spinner sits at the right end of the status row)
@@ -393,7 +420,7 @@ class AppController(NSObject):
 
     def connectClicked_(self, sender):
         self._set_status("Connecting…")
-        self.spinner.startAnimation_(None)
+        self._spin_begin()
         self.worker.run_async(self.worker.status(),
                               on_done=self._got_status, on_error=self._got_error)
 
@@ -410,7 +437,7 @@ class AppController(NSObject):
             self._set_status(f"Image error: {exc}")
             return
         self.print_btn.setEnabled_(False)
-        self.spinner.startAnimation_(None)
+        self._spin_begin()
         self._set_status("Printing…")
         self.worker.run_async(
             self.worker.print_bytes(data, self.intensity),
@@ -448,7 +475,7 @@ class AppController(NSObject):
         self.print_btn.setTitle_("Print" if self.connected else "Connect and Print")
 
     def _got_status(self, st):
-        self.spinner.stopAnimation_(None)
+        self._spin_end()
         self.connected = True
         self.conn_label.setStringValue_(
             f"Connected · battery {st.battery}%  ·  {st.error_text}")
@@ -458,7 +485,7 @@ class AppController(NSObject):
         self._set_status("Ready.")
 
     def _got_error(self, exc):
-        self.spinner.stopAnimation_(None)
+        self._spin_end()
         self.connected = False
         self.conn_label.setStringValue_("Not connected")
         self.conn_label.setTextColor_(NSColor.secondaryLabelColor())
@@ -466,7 +493,7 @@ class AppController(NSObject):
         self._set_status(f"⚠︎ {exc}")
 
     def _print_done(self):
-        self.spinner.stopAnimation_(None)
+        self._spin_end()
         self.connected = True
         self._update_print_button()
         self._set_status("Printed ✓")
@@ -474,7 +501,288 @@ class AppController(NSObject):
     def _set_status(self, text):
         self.status_label.setStringValue_(text)
 
+    def _clear_status_if(self, *prefixes):
+        """Clear the shared status line only if it still shows our message."""
+        if str(self.status_label.stringValue()).startswith(prefixes):
+            self._set_status("")
+
+    # BLE work and the updater overlap on the one spinner; balance
+    # start/stop with a counter so neither can switch the other's off.
+    def _spin_begin(self):
+        self._spin_count += 1
+        if self._spin_count == 1:
+            self.spinner.startAnimation_(None)
+
+    def _spin_end(self):
+        self._spin_count = max(0, self._spin_count - 1)
+        if self._spin_count == 0:
+            self.spinner.stopAnimation_(None)
+
+    # -- About / Help / GitHub (menu actions) -------------------------------
+
+    def showAbout_(self, sender):
+        # The standard About panel reads Info.plist, which is absent in dev
+        # mode — pass explicit options so it's correct both ways.
+        credits = NSAttributedString.alloc().initWithString_attributes_(
+            "Print photos to an MXW01 Bluetooth thermal printer.\n"
+            + version.GITHUB_URL,
+            {NSFontAttributeName: NSFont.systemFontOfSize_(11),
+             NSForegroundColorAttributeName: NSColor.secondaryLabelColor()})
+        NSApp().orderFrontStandardAboutPanelWithOptions_({
+            "ApplicationName": version.APP_NAME,
+            "ApplicationVersion": version.__version__,
+            "Version": "",          # hide the "(build)" suffix
+            "Credits": credits,
+        })
+
+    def showHelp_(self, sender):
+        if self.help_panel is None:
+            self._build_help_panel()
+        self.help_panel.makeKeyAndOrderFront_(None)
+        NSApp().activateIgnoringOtherApps_(True)
+
+    def openGitHub_(self, sender):
+        NSWorkspace.sharedWorkspace().openURL_(
+            NSURL.URLWithString_(version.GITHUB_URL))
+
+    def _build_help_panel(self):
+        W, H = 520, 560
+        rect = NSMakeRect(0, 0, W, H)
+        style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
+        panel = NSPanel.alloc().initWithContentRect_styleMask_backing_defer_(
+            rect, style, NSBackingStoreBuffered, False)
+        panel.setTitle_("ThermalPrint Help")
+        panel.setReleasedWhenClosed_(False)   # reused on subsequent opens
+        panel.center()
+
+        scroll = NSScrollView.alloc().initWithFrame_(rect)
+        scroll.setHasVerticalScroller_(True)
+        scroll.setAutoresizingMask_(NSViewWidthSizable | NSViewHeightSizable)
+
+        tv = NSTextView.alloc().initWithFrame_(rect)
+        tv.setEditable_(False)
+        tv.setSelectable_(True)
+        tv.setVerticallyResizable_(True)
+        tv.setHorizontallyResizable_(False)
+        tv.setAutoresizingMask_(NSViewWidthSizable)
+        tv.setTextContainerInset_(NSMakeSize(16, 14))
+        tv.textContainer().setWidthTracksTextView_(True)
+        tv.setBackgroundColor_(NSColor.textBackgroundColor())
+        tv.textStorage().setAttributedString_(self._help_text())
+        scroll.setDocumentView_(tv)
+
+        panel.setContentView_(scroll)
+        self.help_panel = panel
+
+    def _help_text(self):
+        head_font = NSFont.boldSystemFontOfSize_(13)
+        body_font = NSFont.systemFontOfSize_(12)
+        text = NSMutableAttributedString.alloc().init()
+
+        def add(s, font):
+            text.appendAttributedString_(
+                NSAttributedString.alloc().initWithString_attributes_(
+                    s, {NSFontAttributeName: font,
+                        NSForegroundColorAttributeName: NSColor.labelColor()}))
+
+        def section(heading, body):
+            if text.length():
+                add("\n", body_font)
+            add(heading + "\n", head_font)
+            add(body + "\n", body_font)
+
+        section("How to print", (
+            "1. Turn the printer on.\n"
+            "2. Drag a photo into the window, choose File → Open… (⌘O), or "
+            "drop a photo on the app icon in the Dock.\n"
+            "3. The preview shows exactly what will print: the image scaled "
+            "to the printer's 384-pixel width and dithered to 1-bit black & "
+            "white. Adjust it with the sliders.\n"
+            "4. Click Print (⌘P). The first print scans for the printer, "
+            "connects, and caches its address, so later prints start "
+            "instantly."))
+        section("Controls", (
+            "Darkness — how hard the printhead burns, 0–255. Lower it if "
+            "prints smear; raise it toward 255 if they come out faint. The "
+            "preview tints black dots to match.\n"
+            "Brightness — lower values put more black dots on paper (a "
+            "darker print); higher values lighten it.\n"
+            "Contrast — punches up midtones before dithering. Raise it if "
+            "photos look muddy.\n"
+            "Dither — Floyd–Steinberg dithering keeps gradients readable in "
+            "pure black & white; best for photos. Turn it off for line art "
+            "or text to get a hard threshold."))
+        section("First-run Bluetooth permission", (
+            "The first time you connect or print, macOS asks to allow "
+            "Bluetooth — click Allow. If it never asked, or printing fails "
+            "immediately, open System Settings → Privacy & Security → "
+            "Bluetooth and make sure ThermalPrint is listed and enabled."))
+        section("Troubleshooting", (
+            "Printer not found — the printer is off, asleep, or already "
+            "connected to your phone (the Fun Print app holds the "
+            "connection). Power-cycle the printer and try again.\n"
+            "Prints too light — raise Darkness toward 255, or lower "
+            "Brightness.\n"
+            "Prints smear or are too dark — lower Darkness (try 60–120).\n"
+            "Nothing comes out — check the paper roll; Connect / Refresh "
+            "reports paper and battery status."))
+        return text
+
+    # -- Software update -----------------------------------------------------
+    # All updater calls run on a background thread; results hop back to the
+    # main thread via NSOperationQueue (same pattern as PrinterWorker).
+
+    def checkForUpdates_(self, sender):
+        if self._update_busy:
+            return
+        self._update_busy = True
+        self._set_status("Checking for updates…")
+        self._spin_begin()
+
+        def work():
+            try:
+                info = updater.check_for_update()
+            except Exception as exc:  # noqa: BLE001
+                NSOperationQueue.mainQueue().addOperationWithBlock_(
+                    lambda exc=exc: self._update_check_failed(exc))
+                return
+            NSOperationQueue.mainQueue().addOperationWithBlock_(
+                lambda info=info: self._update_check_done(info))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _update_check_done(self, info):
+        self._spin_end()
+        self._update_busy = False
+        self._clear_status_if("Checking for updates")
+        if info is None:
+            alert = NSAlert.alloc().init()
+            alert.setAlertStyle_(NSAlertStyleInformational)
+            alert.setMessageText_("You're up to date")
+            alert.setInformativeText_(
+                f"ThermalPrint {updater.CURRENT_VERSION} is currently the "
+                "newest version available.")
+            alert.runModal()
+        else:
+            self._offer_update(info)
+
+    def _update_check_failed(self, exc):
+        self._spin_end()
+        self._update_busy = False
+        self._clear_status_if("Checking for updates")
+        alert = NSAlert.alloc().init()
+        alert.setAlertStyle_(NSAlertStyleWarning)
+        alert.setMessageText_("Update check failed")
+        alert.setInformativeText_(str(exc))
+        alert.runModal()
+
+    def _offer_update(self, info):
+        """Update-available alert (used by both manual and launch checks)."""
+        notes = (info.notes or "").strip()
+        if len(notes) > 400:
+            notes = notes[:400].rstrip() + "…"
+        body = f"You have ThermalPrint {updater.CURRENT_VERSION}."
+        if notes:
+            body += "\n\n" + notes
+
+        alert = NSAlert.alloc().init()
+        alert.setAlertStyle_(NSAlertStyleInformational)
+        alert.setMessageText_(f"ThermalPrint {info.version} is available")
+        alert.setInformativeText_(body)
+        bundled = updater.is_bundled()
+        # In dev mode there is no bundle to swap — send them to the release.
+        alert.addButtonWithTitle_("Install Update" if bundled
+                                  else "Open Releases Page")
+        alert.addButtonWithTitle_("Skip This Version")
+        alert.addButtonWithTitle_("Later")
+
+        resp = alert.runModal()
+        if resp == NSAlertFirstButtonReturn:
+            if bundled:
+                self._install_update(info)
+            else:
+                NSWorkspace.sharedWorkspace().openURL_(
+                    NSURL.URLWithString_(info.url))
+        elif resp == NSAlertSecondButtonReturn:
+            updater.set_skipped_version(info.version)
+        # Later → do nothing; the next check will offer it again.
+
+    def _install_update(self, info):
+        if self._update_busy:
+            return
+        self._update_busy = True
+        self._set_status("Downloading update…")
+        self._spin_begin()
+
+        last_pct = [-1]
+
+        def progress(frac):
+            pct = -1 if frac is None else int(frac * 100)
+            if pct == last_pct[0]:
+                return          # only post whole-percent changes
+            last_pct[0] = pct
+            text = ("Downloading update…" if pct < 0
+                    else f"Downloading update… {pct}%")
+            NSOperationQueue.mainQueue().addOperationWithBlock_(
+                lambda text=text: self._set_status(text))
+
+        def work():
+            try:
+                staged = updater.download_update(info, progress)
+                NSOperationQueue.mainQueue().addOperationWithBlock_(
+                    lambda: self._set_status("Installing update…"))
+                updater.install_and_relaunch(staged)
+            except Exception as exc:  # noqa: BLE001
+                NSOperationQueue.mainQueue().addOperationWithBlock_(
+                    lambda exc=exc: self._install_failed(exc))
+                return
+            # Helper script waits for this PID, swaps the bundle, relaunches.
+            NSOperationQueue.mainQueue().addOperationWithBlock_(
+                lambda: NSApp().terminate_(None))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _install_failed(self, exc):
+        self._spin_end()
+        self._update_busy = False
+        self._clear_status_if("Downloading update", "Installing update")
+        alert = NSAlert.alloc().init()
+        alert.setAlertStyle_(NSAlertStyleWarning)
+        alert.setMessageText_("Update failed")
+        alert.setInformativeText_(str(exc))
+        alert.runModal()
+
     # -- App delegate ------------------------------------------------------
+
+    def applicationDidFinishLaunching_(self, notification):
+        # Sparkle-style silent update check, at most once per 24 h. Only an
+        # actual, non-skipped update surfaces UI; errors stay silent.
+        if self._update_busy or not updater.should_auto_check():
+            return
+        self._update_busy = True
+
+        def work():
+            updater.mark_checked()
+            try:
+                info = updater.check_for_update()
+            except Exception:  # noqa: BLE001 — silent at launch
+                info = None
+            NSOperationQueue.mainQueue().addOperationWithBlock_(
+                lambda info=info: self._silent_check_done(info))
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _silent_check_done(self, info):
+        self._update_busy = False
+        if info is not None and info.version != updater.skipped_version():
+            self._offer_update(info)
+
+    def applicationShouldHandleReopen_hasVisibleWindows_(self, app, has_visible):
+        # Dock-icon click with no visible window: bring the window back.
+        if self.window.isMiniaturized():
+            self.window.deminiaturize_(None)
+        self.window.makeKeyAndOrderFront_(None)
+        return True
 
     def applicationShouldTerminateAfterLastWindowClosed_(self, app):
         return True
@@ -498,6 +806,78 @@ class AppController(NSObject):
 
 
 # ---------------------------------------------------------------------------
+# Menu bar
+# ---------------------------------------------------------------------------
+
+def _menu_item(menu, title, action, key, *, target=None, modifiers=None):
+    """Append one item. target=None leaves standard actions on the responder
+    chain; custom actions get the controller as an explicit target."""
+    item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
+        title, action, key)
+    if target is not None:
+        item.setTarget_(target)
+    if modifiers is not None:
+        item.setKeyEquivalentModifierMask_(modifiers)
+    menu.addItem_(item)
+    return item
+
+
+def build_menus(app, controller):
+    """Install the full menu bar programmatically (works in dev mode too)."""
+    main_menu = NSMenu.alloc().init()
+
+    # App menu (its title is always the process name; the string is ignored)
+    app_item = main_menu.addItemWithTitle_action_keyEquivalent_(
+        "ThermalPrint", None, "")
+    app_menu = NSMenu.alloc().init()
+    _menu_item(app_menu, "About ThermalPrint", "showAbout:", "",
+               target=controller)
+    _menu_item(app_menu, "Check for Updates…", "checkForUpdates:", "",
+               target=controller)
+    app_menu.addItem_(NSMenuItem.separatorItem())
+    _menu_item(app_menu, "Hide ThermalPrint", "hide:", "h")
+    _menu_item(app_menu, "Hide Others", "hideOtherApplications:", "h",
+               modifiers=NSEventModifierFlagOption | NSEventModifierFlagCommand)
+    _menu_item(app_menu, "Show All", "unhideAllApplications:", "")
+    app_menu.addItem_(NSMenuItem.separatorItem())
+    _menu_item(app_menu, "Quit ThermalPrint", "terminate:", "q")
+    main_menu.setSubmenu_forItem_(app_menu, app_item)
+
+    # File
+    file_item = main_menu.addItemWithTitle_action_keyEquivalent_(
+        "File", None, "")
+    file_menu = NSMenu.alloc().initWithTitle_("File")
+    _menu_item(file_menu, "Open…", "chooseClicked:", "o", target=controller)
+    file_menu.addItem_(NSMenuItem.separatorItem())
+    _menu_item(file_menu, "Print", "printClicked:", "p", target=controller)
+    file_menu.addItem_(NSMenuItem.separatorItem())
+    _menu_item(file_menu, "Close Window", "performClose:", "w")
+    main_menu.setSubmenu_forItem_(file_menu, file_item)
+
+    # Window
+    window_item = main_menu.addItemWithTitle_action_keyEquivalent_(
+        "Window", None, "")
+    window_menu = NSMenu.alloc().initWithTitle_("Window")
+    _menu_item(window_menu, "Minimize", "performMiniaturize:", "m")
+    _menu_item(window_menu, "Zoom", "performZoom:", "")
+    main_menu.setSubmenu_forItem_(window_menu, window_item)
+    app.setWindowsMenu_(window_menu)
+
+    # Help
+    help_item = main_menu.addItemWithTitle_action_keyEquivalent_(
+        "Help", None, "")
+    help_menu = NSMenu.alloc().initWithTitle_("Help")
+    _menu_item(help_menu, "ThermalPrint Help", "showHelp:", "?",
+               target=controller)
+    _menu_item(help_menu, "ThermalPrint on GitHub", "openGitHub:", "",
+               target=controller)
+    main_menu.setSubmenu_forItem_(help_menu, help_item)
+    app.setHelpMenu_(help_menu)
+
+    app.setMainMenu_(main_menu)
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
@@ -515,6 +895,7 @@ def main():
 
     controller = AppController.alloc().init()
     app.setDelegate_(controller)  # keep a strong ref alive
+    build_menus(app, controller)
     app.activateIgnoringOtherApps_(True)
     app.run()
 

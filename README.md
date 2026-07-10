@@ -15,7 +15,8 @@ clean-room implementation of the documented MXW01 protocol — no vendored third
 ## What's in the box
 
 - **`ThermalPrint.app`** — a drag-and-drop Mac app. Drop a photo on it (or double-click
-  to pick one) and it prints. Built by `app/build_app.sh`.
+  to pick one) and it prints. Grab a prebuilt copy from the Releases page (below) or
+  build it yourself with `app/build_release.sh`.
 - **`mxprint.py`** — the same thing as a command-line tool, with more options.
 - **`mxw01.py`** — the core library: BLE protocol + image dithering.
 - **`gui.py`** — the native macOS (Cocoa / PyObjC) interface the app launches.
@@ -23,16 +24,34 @@ clean-room implementation of the documented MXW01 protocol — no vendored third
 The printer is 384 px wide, 1-bit black/white. Photos are auto-scaled to width and
 Floyd–Steinberg dithered so gradients look decent in pure black & white.
 
-## Setup (one time)
+## Download & install
 
-```bash
-cd ~/Projects/ThermalPrint
-python3 -m venv .venv
-.venv/bin/python -m pip install bleak Pillow
-bash app/build_app.sh            # builds "app/ThermalPrint.app"
-```
+Grab `ThermalPrint-<version>.zip` from the Releases page:
 
-Then drag **`app/ThermalPrint.app`** to your Applications folder or Dock (optional).
+https://github.com/xwrvnggp9n-star/ThermalPrint/releases
+
+1. Unzip it (double-click the zip).
+2. Drag **ThermalPrint.app** into **/Applications**.
+3. **First launch only:** right-click (or Control-click) the app and choose
+   **Open**, then click **Open** in the dialog. The app is ad-hoc signed (no paid
+   Apple developer certificate), so macOS blocks a plain double-click the first
+   time. After that, it opens normally.
+
+The prebuilt app is self-contained (Python and all libraries are bundled) and built
+for Apple silicon (arm64). On an Intel Mac, build from source instead (see
+"Building a release" below).
+
+## Auto-update
+
+The app keeps itself current from GitHub Releases:
+
+- At launch it silently checks for a new version, at most once a day. If one is
+  found, it offers **Install Update**, **Skip This Version**, or **Later**.
+- **ThermalPrint → Check for Updates…** checks on demand.
+- **Skip This Version** mutes the launch prompt for that version only; the next
+  release prompts again.
+
+Installing an update downloads the zip, swaps the app bundle in place, and relaunches.
 
 ## Using the app
 
@@ -43,6 +62,59 @@ Then drag **`app/ThermalPrint.app`** to your Applications folder or Dock (option
    usage description can get this permission.)
 4. It scans, connects, and prints. The printer address is cached, so it's instant
    after the first run.
+
+### Menu bar & keyboard shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘O | Open… (choose images) |
+| ⌘P | Print |
+| ⌘W | Close window |
+| ⌘Q | Quit |
+| ⌘? | ThermalPrint Help |
+
+The **ThermalPrint** menu also has **About ThermalPrint** and **Check for
+Updates…**; the **Help** menu links to this repo on GitHub.
+
+## Setup for development (one time)
+
+```bash
+cd ~/Projects/ThermalPrint
+python3 -m venv .venv
+.venv/bin/python -m pip install bleak Pillow
+.venv/bin/python gui.py          # run the GUI directly, no bundle needed
+```
+
+Two build scripts live in `app/`:
+
+- **`app/build_app.sh`** — the thin dev build: a small `.app` whose launcher runs
+  `gui.py` out of this checkout's venv. Quick to build, but tied to this machine
+  (absolute paths baked in) — not distributable.
+- **`app/build_release.sh`** — the real, self-contained build (see below).
+
+## Building a release
+
+```bash
+bash app/build_release.sh
+```
+
+This bundles Python and all dependencies with PyInstaller, ad-hoc signs the app,
+and produces:
+
+- `dist/ThermalPrint.app` — self-contained, drag anywhere
+- `dist/ThermalPrint-<version>.zip` — the distributable
+
+Requires an Apple silicon Mac (the bundle is arm64; PyInstaller builds for the
+host architecture). The version comes from `version.py`.
+
+To publish to GitHub Releases (needs the `gh` CLI, authenticated as the repo owner):
+
+```bash
+bash app/publish_release.sh
+```
+
+It builds (unless `--skip-build`), tags `v<version>`, and uploads the zip. Bump
+`__version__` in `version.py` first if the release already exists.
 
 ## Using the CLI
 
@@ -73,6 +145,9 @@ Options:
 - If it never prompted, run the CLI once from **Terminal** (`.venv/bin/python
   mxprint.py scan`) and grant Terminal Bluetooth access when asked; that also unblocks
   the app.
+
+**"App is damaged" / won't open after download** — that's Gatekeeper objecting to the
+ad-hoc signature. Right-click the app and choose **Open** (see "Download & install").
 
 **"No MXW01 printer found"** — printer off, asleep, or already connected to your phone.
 Power-cycle it and make sure the Fun Print app / phone isn't holding the connection.

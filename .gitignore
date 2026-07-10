@@ -8,6 +8,10 @@ __pycache__/
 # absolute path, so a built bundle isn't portable across machines anyway).
 app/*.app/
 
+# PyInstaller release output (regenerate with app/build_release.sh)
+/dist/
+/build/
+
 # macOS
 .DS_Store
 
