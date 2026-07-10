@@ -33,7 +33,8 @@ from AppKit import (
     NSEventModifierFlagOption, NSFilenamesPboardType, NSFont,
     NSFontAttributeName, NSForegroundColorAttributeName,
     NSImage, NSImageLeft, NSImageView,
-    NSImageScaleProportionallyUpOrDown, NSMakeRect, NSMakeSize,
+    NSImageScaleProportionallyUpOrDown, NSLinkAttributeName,
+    NSMakeRect, NSMakeSize,
     NSMenu, NSMenuItem, NSObject,
     NSOpenPanel, NSPanel, NSProgressIndicator, NSProgressIndicatorStyleSpinning,
     NSScrollView, NSSlider, NSTextField, NSTextView, NSView,
@@ -568,15 +569,30 @@ class AppController(NSObject):
     def showAbout_(self, sender):
         # The standard About panel reads Info.plist, which is absent in dev
         # mode — pass explicit options so it's correct both ways.
-        credits = NSAttributedString.alloc().initWithString_attributes_(
-            "Print photos to an MXW01 Bluetooth thermal printer.\n"
-            + version.GITHUB_URL,
-            {NSFontAttributeName: NSFont.systemFontOfSize_(11),
-             NSForegroundColorAttributeName: NSColor.secondaryLabelColor()})
+        base_attrs = {NSFontAttributeName: NSFont.systemFontOfSize_(11),
+                      NSForegroundColorAttributeName: NSColor.secondaryLabelColor()}
+        credits = NSMutableAttributedString.alloc().init()
+
+        def add(s, link=None):
+            attrs = dict(base_attrs)
+            if link:
+                attrs[NSLinkAttributeName] = NSURL.URLWithString_(link)
+            credits.appendAttributedString_(
+                NSAttributedString.alloc().initWithString_attributes_(s, attrs))
+
+        add("Print photos to an MXW01 Bluetooth thermal printer.\n\n")
+        add(f"By {version.AUTHOR}\n")
+        add(version.CONTACT_EMAIL, link="mailto:" + version.CONTACT_EMAIL)
+        add("  ·  ")
+        add(version.WEBSITE_URL.removeprefix("https://"),
+            link=version.WEBSITE_URL)
+        add("  ·  ")
+        add("GitHub", link=version.GITHUB_URL)
         NSApp().orderFrontStandardAboutPanelWithOptions_({
             "ApplicationName": version.APP_NAME,
             "ApplicationVersion": version.__version__,
             "Version": "",          # hide the "(build)" suffix
+            "Copyright": f"© 2026 {version.AUTHOR}",
             "Credits": credits,
         })
 

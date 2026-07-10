@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermalPrint — print photos on an MXW01 thermal printer from your Mac</title>
+<meta name="description" content="A free, notarized macOS app that prints photos to MXW01 Bluetooth thermal printers. Dithering, rotation, mirroring, a Share-menu extension, and auto-update.">
+<meta property="og:title" content="ThermalPrint for macOS">
+<meta property="og:description" content="Print photos to an MXW01 Bluetooth thermal printer from your Mac.">
+<meta property="og:image" content="https://thermalprint.sklar.app/screenshot.png">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1d1d1f;
+    --muted: #6e6e73;
+    --card: #ffffff;
+    --accent: #0071e3;
+    --accent-fg: #ffffff;
+    --border: #e5e5ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101012;
+      --fg: #f5f5f7;
+      --muted: #98989d;
+      --card: #1c1c1e;
+      --accent: #0a84ff;
+      --border: #2c2c2e;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 3.5rem 1.5rem 2rem; }
+  .hero { text-align: center; }
+  .hero img.appicon {
+    width: 128px; height: 128px;
+    border-radius: 28px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  }
+  h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -.02em; margin-top: 1.2rem; }
+  .tagline { font-size: 1.25rem; color: var(--muted); margin-top: .4rem; }
+  .cta { margin-top: 1.8rem; }
+  .btn {
+    display: inline-block;
+    background: var(--accent); color: var(--accent-fg);
+    font-size: 1.05rem; font-weight: 600;
+    padding: .7rem 1.6rem; border-radius: 980px;
+    text-decoration: none;
+    transition: filter .15s ease;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .cta .sub { display: block; margin-top: .6rem; font-size: .85rem; color: var(--muted); }
+  .cta .sub a { color: var(--muted); }
+  .shot { margin: 3rem auto 0; text-align: center; }
+  .shot img {
+    max-width: 100%; width: 440px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,.15);
+  }
+  section.features { margin-top: 3.5rem; }
+  h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+  .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .25rem; }
+  .card p { font-size: .9rem; color: var(--muted); }
+  .reqs { margin-top: 2.5rem; font-size: .9rem; color: var(--muted); }
+  footer {
+    margin-top: 4rem; padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center; font-size: .85rem; color: var(--muted);
+  }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <img class="appicon" src="icon.png" alt="ThermalPrint app icon" width="128" height="128">
+    <h1>ThermalPrint</h1>
+    <p class="tagline">Print photos on an MXW01 Bluetooth thermal printer, right from your Mac.</p>
+    <div class="cta">
+      <a class="btn" id="download" href="https://github.com/xwrvnggp9n-star/ThermalPrint/releases/latest">Download for macOS</a>
+      <span class="sub" id="dlsub">Free · Apple silicon · macOS 12 or later ·
+        <a href="https://github.com/xwrvnggp9n-star/ThermalPrint/releases">all releases</a></span>
+    </div>
+  </div>
+
+  <div class="shot">
+    <img src="screenshot.png" alt="The ThermalPrint app: a photo dithered to 1-bit black and white in the preview, with darkness, brightness, and contrast sliders.">
+  </div>
+
+  <section class="features">
+    <h2>Features</h2>
+    <div class="grid">
+      <div class="card"><h3>True print preview</h3>
+        <p>The preview is the exact 384-pixel, 1-bit bitmap the printer receives — what you see is what prints.</p></div>
+      <div class="card"><h3>Dialed-in dithering</h3>
+        <p>Floyd–Steinberg dithering with darkness, brightness, and contrast controls for readable photos on thermal paper.</p></div>
+      <div class="card"><h3>Rotate &amp; mirror</h3>
+        <p>Turn the image in 90° steps or flip it left-to-right with one click, right on the preview.</p></div>
+      <div class="card"><h3>In the Share menu</h3>
+        <p>Send a picture straight from Photos, Finder, or Safari — ThermalPrint opens with it loaded and ready.</p></div>
+      <div class="card"><h3>Drag, drop, print</h3>
+        <p>Drop a photo on the window or the Dock icon. The printer is found automatically and remembered.</p></div>
+      <div class="card"><h3>Signed &amp; self-updating</h3>
+        <p>Developer ID signed and notarized by Apple; the app checks for updates and installs them in place.</p></div>
+    </div>
+  </section>
+
+  <p class="reqs">Works with the MXW01 family of inexpensive Bluetooth
+  “cat printer” thermal printers. Command-line tools (<code>mxprint</code>)
+  are included in the source repository.</p>
+
+  <footer>
+    <p>© 2026 Sandor W. Sklar ·
+      <a href="mailto:thermalprint@sklar.app">thermalprint@sklar.app</a> ·
+      <a href="https://github.com/xwrvnggp9n-star/ThermalPrint">Source on GitHub</a></p>
+  </footer>
+</main>
+<script>
+  // Point the download button at the latest release's zip asset directly.
+  fetch("https://api.github.com/repos/xwrvnggp9n-star/ThermalPrint/releases/latest")
+    .then(r => r.ok ? r.json() : null)
+    .then(rel => {
+      if (!rel) return;
+      const zip = (rel.assets || []).find(a => a.name.endsWith(".zip"));
+      if (zip) {
+        document.getElementById("download").href = zip.browser_download_url;
+        document.getElementById("dlsub").firstChild.textContent =
+          "Version " + rel.tag_name.replace(/^v/, "") +
+          " · Free · Apple silicon · macOS 12 or later · ";
+      }
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
