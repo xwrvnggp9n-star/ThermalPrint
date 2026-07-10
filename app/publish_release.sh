@@ -83,12 +83,23 @@ if [ -n "$NOTES_FILE" ]; then
 elif [ -n "$NOTES" ]; then
   NOTES_ARGS=(--notes "$NOTES")
 else
-  NOTES_ARGS=(--notes "ThermalPrint $VERSION for macOS (Apple silicon).
+  # Stub notes: instructions differ for notarized vs ad-hoc builds, so check
+  # whether the built app actually carries a stapled notarization ticket.
+  if xcrun stapler validate "$PROJ/dist/ThermalPrint.app" >/dev/null 2>&1; then
+    NOTES_ARGS=(--notes "ThermalPrint $VERSION for macOS (Apple silicon).
+
+Download ThermalPrint-$VERSION.zip below, unzip, and drag ThermalPrint.app
+to /Applications. The app is Developer ID signed and notarized by Apple, so
+it opens normally. Existing installs pick this release up automatically via
+Check for Updates.")
+  else
+    NOTES_ARGS=(--notes "ThermalPrint $VERSION for macOS (Apple silicon).
 
 Download ThermalPrint-$VERSION.zip below, unzip, and drag ThermalPrint.app
 to /Applications. First launch: right-click the app and choose Open (the
 app is ad-hoc signed). Existing installs pick this release up automatically
 via Check for Updates.")
+  fi
 fi
 
 # --- publish --------------------------------------------------------------------

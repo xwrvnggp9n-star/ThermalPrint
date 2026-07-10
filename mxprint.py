@@ -12,7 +12,7 @@ Options:
   -d, --device ADDR    Printer BLE address/UUID (else auto-discover by name)
   -i, --intensity N    Darkness 0-255 (default 175)
   --no-dither          Use hard threshold instead of Floyd-Steinberg dithering
-  --rotate             Rotate 180 degrees
+  --rotate [DEG]       Rotate clockwise by DEG degrees (90/180/270; default 180)
   --invert             Invert black/white
   --feed N             Feed N blank lines after each image (default 40)
 
@@ -159,7 +159,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-dither", action="store_true", help="Hard threshold instead of dithering")
     p.add_argument("--contrast", type=float, default=1.0, help="Contrast multiplier (1.0 = none)")
     p.add_argument("--brightness", type=float, default=1.0, help="Brightness multiplier (1.0 = none)")
-    p.add_argument("--rotate", action="store_true", help="Rotate 180 degrees")
+    p.add_argument("--rotate", type=int, choices=[0, 90, 180, 270], default=0,
+                   metavar="DEG",
+                   help="Rotate clockwise by DEG degrees (90/180/270); "
+                        "bare --rotate still means 180")
     p.add_argument("--invert", action="store_true", help="Invert black/white")
     p.add_argument("--feed", type=int, default=40, help="Blank lines fed after each image")
     p.add_argument("--debug", action="store_true", help="Print BLE handshake / response details")
@@ -168,9 +171,23 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _normalize_rotate(argv: list[str]) -> list[str]:
+    """Keep the historical bare `--rotate` (= 180°) working now that the
+    option takes a DEG value: insert the implied 180 when the next token
+    isn't a rotation amount (e.g. `mxprint --rotate photo.png`)."""
+    out = []
+    for i, tok in enumerate(argv):
+        out.append(tok)
+        if tok == "--rotate":
+            nxt = argv[i + 1] if i + 1 < len(argv) else None
+            if nxt not in ("0", "90", "180", "270"):
+                out.append("180")
+    return out
+
+
 def main() -> int:
     parser = build_parser()
-    ns = parser.parse_args()
+    ns = parser.parse_args(_normalize_rotate(sys.argv[1:]))
     positional = ns.args
 
     if not positional:

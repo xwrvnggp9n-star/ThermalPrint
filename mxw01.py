@@ -90,7 +90,7 @@ def render_bitmap(
     path: str,
     *,
     dither: bool = True,
-    rotate: bool = False,
+    rotate: int = 0,
     invert: bool = False,
     contrast: float = 1.0,
     brightness: float = 1.0,
@@ -98,6 +98,8 @@ def render_bitmap(
     """Load an image and return the final 384px-wide 1-bit PIL image.
 
     This is exactly what will be printed, so the GUI can show it as a preview.
+    rotate is clockwise degrees (0/90/180/270); True is accepted as 180 for
+    backward compatibility with the old boolean flag.
     """
     img = Image.open(path)
     img = ImageOps.exif_transpose(img)          # honor camera orientation
@@ -107,8 +109,15 @@ def render_bitmap(
     background = Image.new("RGBA", img.size, (255, 255, 255, 255))
     img = Image.alpha_composite(background, img).convert("L")
 
+    if rotate is True:
+        rotate = 180
+    rotate = int(rotate) % 360
     if rotate:
-        img = img.rotate(180)
+        if rotate % 90:
+            raise ValueError(f"rotate must be a multiple of 90, got {rotate}")
+        # PIL rotates counter-clockwise; expand so 90/270 swap the dimensions
+        # before the image is scaled to the print width.
+        img = img.rotate(-rotate, expand=True)
 
     # Scale to the 384px print width, preserving aspect ratio.
     if img.width != PRINT_WIDTH:

@@ -35,6 +35,13 @@ def _read_version(path):
 
 VERSION = _read_version(os.path.join(PROJ, "version.py"))
 
+# Signing: build_release.sh exports these when a Developer ID certificate is
+# available. PyInstaller then signs every collected binary and the final .app
+# with hardened runtime (BUNDLE inherits the identity from EXE). When unset,
+# the bundle is left for build_release.sh's ad-hoc fallback.
+CODESIGN_IDENTITY = os.environ.get("TP_CODESIGN_IDENTITY") or None
+ENTITLEMENTS_FILE = os.environ.get("TP_ENTITLEMENTS") or None
+
 BLUETOOTH_USAGE = "ThermalPrint needs Bluetooth to talk to your thermal printer."
 
 a = Analysis(
@@ -84,8 +91,8 @@ exe = EXE(
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
+    codesign_identity=CODESIGN_IDENTITY,
+    entitlements_file=ENTITLEMENTS_FILE,
 )
 
 coll = COLLECT(

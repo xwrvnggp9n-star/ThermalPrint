@@ -230,6 +230,7 @@ class AppController(NSObject):
         self.contrast = 1.35
         self.brightness = 1.0
         self.dither = True
+        self.rotation = 0        # clockwise degrees: 0/90/180/270
         self.connected = False
         self._bw = None          # cached dithered bitmap (re-tinted on darkness change)
         self.help_panel = None   # lazily created by showHelp:
@@ -353,6 +354,26 @@ class AppController(NSObject):
         self.dither_box.setAction_("ditherToggled:")
         content.addSubview_(self.dither_box)
 
+        # Rotate buttons (right of the dither checkbox, same row)
+        sym_factory = getattr(
+            NSImage, "imageWithSystemSymbolName_accessibilityDescription_", None)
+        for x, title, sym_name, action in (
+                (330, "⟲", "rotate.left", "rotateLeftClicked:"),
+                (386, "⟳", "rotate.right", "rotateRightClicked:")):
+            btn = NSButton.alloc().initWithFrame_(NSMakeRect(x, top(608, 26), 52, 26))
+            btn.setBezelStyle_(NSBezelStyleRounded)
+            btn.setTarget_(self)
+            btn.setAction_(action)
+            sym = sym_factory(sym_name, title) if sym_factory else None
+            if sym:
+                btn.setTitle_("")
+                btn.setImage_(sym)
+            else:
+                btn.setTitle_(title)
+            btn.setToolTip_("Rotate left 90°" if "left" in sym_name
+                            else "Rotate right 90°")
+            content.addSubview_(btn)
+
         # Print button — full width to match the preview box (x 20 → 440)
         self.print_btn = NSButton.alloc().initWithFrame_(NSMakeRect(20, top(644, 36), 420, 36))
         self.print_btn.setTitle_("Connect and Print")
@@ -394,9 +415,18 @@ class AppController(NSObject):
 
     def loadImagePath_(self, path):
         self.image_path = str(path)
+        self.rotation = 0        # fresh image starts unrotated
         self.file_label.setStringValue_(Path(self.image_path).name)
         self.hint.setHidden_(True)
         self._update_print_button()
+        self._rebuild_bitmap()
+
+    def rotateLeftClicked_(self, sender):
+        self.rotation = (self.rotation - 90) % 360
+        self._rebuild_bitmap()
+
+    def rotateRightClicked_(self, sender):
+        self.rotation = (self.rotation + 90) % 360
         self._rebuild_bitmap()
 
     def intensityChanged_(self, sender):
@@ -429,7 +459,7 @@ class AppController(NSObject):
             return
         try:
             bw = mxw01.render_bitmap(
-                self.image_path, dither=self.dither,
+                self.image_path, dither=self.dither, rotate=self.rotation,
                 contrast=self.contrast, brightness=self.brightness)
             data = mxw01.pack_bitmap(bw)
             data += b"\x00" * (mxw01.BYTES_PER_LINE * 40)  # feed to tear off
@@ -452,7 +482,7 @@ class AppController(NSObject):
             return
         try:
             self._bw = mxw01.render_bitmap(
-                self.image_path, dither=self.dither,
+                self.image_path, dither=self.dither, rotate=self.rotation,
                 contrast=self.contrast, brightness=self.brightness)
         except Exception as exc:  # noqa: BLE001
             self._bw = None
@@ -601,6 +631,13 @@ class AppController(NSObject):
             "4. Click Print (⌘P). The first print scans for the printer, "
             "connects, and caches its address, so later prints start "
             "instantly."))
+        section("Share from other apps", (
+            "ThermalPrint appears in the macOS Share menu: in Photos, "
+            "Finder, Safari, etc., click Share and choose ThermalPrint to "
+            "load the image here ready to print. If it isn't listed, open "
+            "the Share menu's More/Edit Extensions item (or System Settings "
+            "→ General → Login Items & Extensions → Extensions → Sharing) "
+            "and enable ThermalPrint."))
         section("Controls", (
             "Darkness — how hard the printhead burns, 0–255. Lower it if "
             "prints smear; raise it toward 255 if they come out faint. The "
@@ -611,7 +648,10 @@ class AppController(NSObject):
             "photos look muddy.\n"
             "Dither — Floyd–Steinberg dithering keeps gradients readable in "
             "pure black & white; best for photos. Turn it off for line art "
-            "or text to get a hard threshold."))
+            "or text to get a hard threshold.\n"
+            "Rotate — the ⟲ and ⟳ buttons turn the image in 90° steps "
+            "before it is scaled to the paper width; loading a new image "
+            "resets the rotation."))
         section("First-run Bluetooth permission", (
             "The first time you connect or print, macOS asks to allow "
             "Bluetooth — click Allow. If it never asked, or printing fails "
