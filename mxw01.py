@@ -91,6 +91,7 @@ def render_bitmap(
     *,
     dither: bool = True,
     rotate: int = 0,
+    mirror: bool = False,
     invert: bool = False,
     contrast: float = 1.0,
     brightness: float = 1.0,
@@ -99,7 +100,8 @@ def render_bitmap(
 
     This is exactly what will be printed, so the GUI can show it as a preview.
     rotate is clockwise degrees (0/90/180/270); True is accepted as 180 for
-    backward compatibility with the old boolean flag.
+    backward compatibility with the old boolean flag. mirror flips the image
+    left-to-right after rotation.
     """
     img = Image.open(path)
     img = ImageOps.exif_transpose(img)          # honor camera orientation
@@ -118,6 +120,8 @@ def render_bitmap(
         # PIL rotates counter-clockwise; expand so 90/270 swap the dimensions
         # before the image is scaled to the print width.
         img = img.rotate(-rotate, expand=True)
+    if mirror:
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
     # Scale to the 384px print width, preserving aspect ratio.
     if img.width != PRINT_WIDTH:

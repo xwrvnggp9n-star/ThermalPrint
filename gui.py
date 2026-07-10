@@ -231,6 +231,7 @@ class AppController(NSObject):
         self.brightness = 1.0
         self.dither = True
         self.rotation = 0        # clockwise degrees: 0/90/180/270
+        self.mirrored = False    # horizontal flip, applied after rotation
         self.connected = False
         self._bw = None          # cached dithered bitmap (re-tinted on darkness change)
         self.help_panel = None   # lazily created by showHelp:
@@ -291,6 +292,32 @@ class AppController(NSObject):
         # intercept (and reject) dropped files; clear it so drops reach DropView.
         self.preview.unregisterDraggedTypes()
         content.addSubview_(self.preview)
+
+        # Rotate / mirror overlay buttons in the drop zone's lower corners
+        # (added after the preview so they draw on top; hidden until an
+        # image is loaded).
+        sym_factory = getattr(
+            NSImage, "imageWithSystemSymbolName_accessibilityDescription_", None)
+        self.transform_btns = []
+        for x, fallback, sym_name, action, tip in (
+                (28, "⟳", "rotate.right", "rotateClicked:",
+                 "Rotate 90° clockwise"),
+                (388, "⇋", "arrow.left.and.right.righttriangle.left.righttriangle.right",
+                 "mirrorClicked:", "Mirror (flip left-to-right)")):
+            btn = NSButton.alloc().initWithFrame_(NSMakeRect(x, top(416, 28), 44, 28))
+            btn.setBezelStyle_(NSBezelStyleRounded)
+            btn.setTarget_(self)
+            btn.setAction_(action)
+            sym = sym_factory(sym_name, tip) if sym_factory else None
+            if sym:
+                btn.setTitle_("")
+                btn.setImage_(sym)
+            else:
+                btn.setTitle_(fallback)
+            btn.setToolTip_(tip)
+            btn.setHidden_(True)
+            content.addSubview_(btn)
+            self.transform_btns.append(btn)
 
         # Choose button + filename
         choose = NSButton.alloc().initWithFrame_(NSMakeRect(20, top(464, 28), 140, 28))
@@ -354,26 +381,6 @@ class AppController(NSObject):
         self.dither_box.setAction_("ditherToggled:")
         content.addSubview_(self.dither_box)
 
-        # Rotate buttons (right of the dither checkbox, same row)
-        sym_factory = getattr(
-            NSImage, "imageWithSystemSymbolName_accessibilityDescription_", None)
-        for x, title, sym_name, action in (
-                (330, "⟲", "rotate.left", "rotateLeftClicked:"),
-                (386, "⟳", "rotate.right", "rotateRightClicked:")):
-            btn = NSButton.alloc().initWithFrame_(NSMakeRect(x, top(608, 26), 52, 26))
-            btn.setBezelStyle_(NSBezelStyleRounded)
-            btn.setTarget_(self)
-            btn.setAction_(action)
-            sym = sym_factory(sym_name, title) if sym_factory else None
-            if sym:
-                btn.setTitle_("")
-                btn.setImage_(sym)
-            else:
-                btn.setTitle_(title)
-            btn.setToolTip_("Rotate left 90°" if "left" in sym_name
-                            else "Rotate right 90°")
-            content.addSubview_(btn)
-
         # Print button — full width to match the preview box (x 20 → 440)
         self.print_btn = NSButton.alloc().initWithFrame_(NSMakeRect(20, top(644, 36), 420, 36))
         self.print_btn.setTitle_("Connect and Print")
@@ -415,18 +422,24 @@ class AppController(NSObject):
 
     def loadImagePath_(self, path):
         self.image_path = str(path)
-        self.rotation = 0        # fresh image starts unrotated
+        self.rotation = 0        # fresh image starts unrotated…
+        self.mirrored = False    # …and unmirrored
         self.file_label.setStringValue_(Path(self.image_path).name)
         self.hint.setHidden_(True)
+        for btn in self.transform_btns:
+            btn.setHidden_(False)
         self._update_print_button()
         self._rebuild_bitmap()
 
-    def rotateLeftClicked_(self, sender):
-        self.rotation = (self.rotation - 90) % 360
+    def rotateClicked_(self, sender):
+        # Always turn what the user SEES 90° clockwise: under a mirror the
+        # underlying rotation must step the other way.
+        step = -90 if self.mirrored else 90
+        self.rotation = (self.rotation + step) % 360
         self._rebuild_bitmap()
 
-    def rotateRightClicked_(self, sender):
-        self.rotation = (self.rotation + 90) % 360
+    def mirrorClicked_(self, sender):
+        self.mirrored = not self.mirrored
         self._rebuild_bitmap()
 
     def intensityChanged_(self, sender):
@@ -460,6 +473,7 @@ class AppController(NSObject):
         try:
             bw = mxw01.render_bitmap(
                 self.image_path, dither=self.dither, rotate=self.rotation,
+                mirror=self.mirrored,
                 contrast=self.contrast, brightness=self.brightness)
             data = mxw01.pack_bitmap(bw)
             data += b"\x00" * (mxw01.BYTES_PER_LINE * 40)  # feed to tear off
@@ -483,6 +497,7 @@ class AppController(NSObject):
         try:
             self._bw = mxw01.render_bitmap(
                 self.image_path, dither=self.dither, rotate=self.rotation,
+                mirror=self.mirrored,
                 contrast=self.contrast, brightness=self.brightness)
         except Exception as exc:  # noqa: BLE001
             self._bw = None
@@ -649,9 +664,10 @@ class AppController(NSObject):
             "Dither — Floyd–Steinberg dithering keeps gradients readable in "
             "pure black & white; best for photos. Turn it off for line art "
             "or text to get a hard threshold.\n"
-            "Rotate — the ⟲ and ⟳ buttons turn the image in 90° steps "
-            "before it is scaled to the paper width; loading a new image "
-            "resets the rotation."))
+            "Rotate / Mirror — the buttons in the preview's lower corners "
+            "turn the image 90° clockwise per click (left button) or flip "
+            "it left-to-right (right button) before it is scaled to the "
+            "paper width; loading a new image resets both."))
         section("First-run Bluetooth permission", (
             "The first time you connect or print, macOS asks to allow "
             "Bluetooth — click Allow. If it never asked, or printing fails "

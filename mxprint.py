@@ -13,6 +13,7 @@ Options:
   -i, --intensity N    Darkness 0-255 (default 175)
   --no-dither          Use hard threshold instead of Floyd-Steinberg dithering
   --rotate [DEG]       Rotate clockwise by DEG degrees (90/180/270; default 180)
+  --mirror             Flip left-to-right (applied after rotation)
   --invert             Invert black/white
   --feed N             Feed N blank lines after each image (default 40)
 
@@ -97,7 +98,8 @@ async def cmd_status(device: str | None, debug: bool = False) -> int:
 
 async def cmd_preview(image: str, out: str | None, args) -> int:
     data = mxw01.image_to_lines(
-        image, dither=not args.no_dither, rotate=args.rotate, invert=args.invert,
+        image, dither=not args.no_dither, rotate=args.rotate,
+        mirror=args.mirror, invert=args.invert,
         contrast=args.contrast, brightness=args.brightness,
     )
     lines = mxw01.line_count(data)
@@ -130,6 +132,7 @@ async def cmd_print(images: list[str], device: str | None, args) -> int:
                 img_path,
                 dither=not args.no_dither,
                 rotate=args.rotate,
+                mirror=args.mirror,
                 invert=args.invert,
                 contrast=args.contrast,
                 brightness=args.brightness,
@@ -163,6 +166,8 @@ def build_parser() -> argparse.ArgumentParser:
                    metavar="DEG",
                    help="Rotate clockwise by DEG degrees (90/180/270); "
                         "bare --rotate still means 180")
+    p.add_argument("--mirror", action="store_true",
+                   help="Flip left-to-right (applied after rotation)")
     p.add_argument("--invert", action="store_true", help="Invert black/white")
     p.add_argument("--feed", type=int, default=40, help="Blank lines fed after each image")
     p.add_argument("--debug", action="store_true", help="Print BLE handshake / response details")
