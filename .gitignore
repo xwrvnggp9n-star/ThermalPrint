@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Built app bundle (regenerate with app/build_app.sh; the launcher bakes in an
+# absolute path, so a built bundle isn't portable across machines anyway).
+app/*.app/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
