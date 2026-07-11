@@ -78,7 +78,14 @@ thermal printer,MXW01,cat printer,photo print,bluetooth,dither,receipt printer,m
 
 ## Pricing
 
-- **Free** (matches the macOS app).
+- **$4.99 USD** (paid). Set in App Store Connect → *Pricing and Availability* (pick the $4.99
+  price point directly; no code/build change — the IPA is identical for free vs paid).
+- **PREREQUISITE:** to sell a paid app you must accept the **Paid Applications Agreement** and
+  complete **tax + banking** info in App Store Connect (*Business → Agreements, Tax, and Banking*).
+  The app cannot be submitted as paid until this agreement is active.
+- **Commission:** 30%, or **15%** if enrolled in the **App Store Small Business Program**
+  (revenue < $1M/year) — worth enrolling (~$0.75 vs ~$1.50 per sale at $4.99).
+- Note: the macOS app is free; charging only for iOS is fine (separate SKUs).
 
 ---
 
