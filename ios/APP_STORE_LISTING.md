@@ -57,7 +57,7 @@ thermal printer,MXW01,cat printer,photo print,bluetooth,dither,receipt printer,m
 ```
 (93 chars)
 
-## What's New (version notes, max 4000) — for v1.2.0 first release
+## What's New (version notes, max 4000) — for v1.0 first release
 
 > First release of ThermalPrint for iPhone and iPad. Print photos to your MXW01 Bluetooth thermal printer with a true-to-paper preview and adjustable dithering.
 
