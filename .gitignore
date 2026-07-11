@@ -17,3 +17,14 @@ app/*.app/
 
 # Logs
 *.log
+
+# Xcode / iOS
+ios/build/
+ios/DerivedData/
+ios/**/xcuserdata/
+ios/**/*.xcuserstate
+ios/.build-screenshot-*.png
+*.ipa
+
+# OMC / Claude Code operational state
+.claude/
