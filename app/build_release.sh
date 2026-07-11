@@ -140,7 +140,13 @@ rm -f "$ZIP"
 
 # --- notarize + staple (Developer ID builds only) ------------------------------
 if [ -n "$SIGN_IDENTITY" ] && [ "${SKIP_NOTARIZE:-0}" -eq 0 ]; then
-  # Credentials: direct env creds win; otherwise the keychain profile.
+  # Credentials: ~/.config/thermalprint/notary.env (if present), then direct
+  # env creds; the keychain profile is the last resort (keychain items have
+  # been seen to vanish in background sessions).
+  if [ -z "${NOTARY_APPLE_ID:-}" ] && [ -f "$HOME/.config/thermalprint/notary.env" ]; then
+    # shellcheck disable=SC1090
+    . "$HOME/.config/thermalprint/notary.env"
+  fi
   if [ -n "${NOTARY_APPLE_ID:-}" ] && [ -n "${NOTARY_PASSWORD:-}" ]; then
     NOTARY_ARGS=(--apple-id "$NOTARY_APPLE_ID"
                  --team-id "${NOTARY_TEAM_ID:-5Y3S9Y6Z27}"
