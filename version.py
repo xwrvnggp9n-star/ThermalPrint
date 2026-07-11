@@ -11,3 +11,4 @@ CONTACT_EMAIL = "thermalprint@sklar.app"
 WEBSITE_URL = "https://thermalprint.sklar.app"
 GITHUB_REPO = "xwrvnggp9n-star/ThermalPrint"   # owner/name
 GITHUB_URL = "https://github.com/xwrvnggp9n-star/ThermalPrint"
+SUPPORT_URL = "https://buymeacoffee.com/sandysklar"

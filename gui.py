@@ -588,6 +588,8 @@ class AppController(NSObject):
             link=version.WEBSITE_URL)
         add("  ·  ")
         add("GitHub", link=version.GITHUB_URL)
+        add("\n")
+        add("Support this project ☕", link=version.SUPPORT_URL)
         NSApp().orderFrontStandardAboutPanelWithOptions_({
             "ApplicationName": version.APP_NAME,
             "ApplicationVersion": version.__version__,
