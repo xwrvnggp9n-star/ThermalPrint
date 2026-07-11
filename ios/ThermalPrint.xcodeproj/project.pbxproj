@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		16B3B8ADCF0A2EA91A0976B7 /* MXW01Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E5DC94E82DD68AAF47B90C /* MXW01Protocol.swift */; };
+		1CC06C48316C7007F8DFB71F /* BitmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BF9682F6872C457272FA16 /* BitmapRenderer.swift */; };
+		343092A59B2C884775171868 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABDF8F19C9BB8FBB913FBDC /* AppInfo.swift */; };
+		43ACC37AD06DD1E1A81B663A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D01812FDF1808AB9F5BB17 /* AboutView.swift */; };
+		57C86F68FE8E3246EDAC59F6 /* PrinterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51AF50264CA71EB7FB0C0603 /* PrinterManager.swift */; };
+		5E0575245E44450BEAC638AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8EEA26433FF83A03655EBE4 /* Assets.xcassets */; };
+		61044FC2AD35E1C5142DA452 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D1A59BCD452CB36929B17A /* ContentView.swift */; };
+		BC6D11B3513A287DF8ED3283 /* ThermalPrintApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD9D035F8A33167FC32629D /* ThermalPrintApp.swift */; };
+		CDD82EFE164F405814D638FA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2511B4B19DCB3312B321ED56 /* PrivacyInfo.xcprivacy */; };
+		D1371F390C7B6FD69358D3D6 /* BitmapCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65BEB073EDB04EA3283D1FC /* BitmapCore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		13E5DC94E82DD68AAF47B90C /* MXW01Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MXW01Protocol.swift; sourceTree = "<group>"; };
+		2511B4B19DCB3312B321ED56 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		43BF9682F6872C457272FA16 /* BitmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapRenderer.swift; sourceTree = "<group>"; };
+		46D01812FDF1808AB9F5BB17 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		51AF50264CA71EB7FB0C0603 /* PrinterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrinterManager.swift; sourceTree = "<group>"; };
+		AABDF8F19C9BB8FBB913FBDC /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		AFD9D035F8A33167FC32629D /* ThermalPrintApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalPrintApp.swift; sourceTree = "<group>"; };
+		C513BF499623E5CDB74629FE /* ThermalPrint.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ThermalPrint.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C65BEB073EDB04EA3283D1FC /* BitmapCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapCore.swift; sourceTree = "<group>"; };
+		E8EEA26433FF83A03655EBE4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F4D1A59BCD452CB36929B17A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		20E657AC80B828F3AFD47950 /* ThermalPrint */ = {
+			isa = PBXGroup;
+			children = (
+				46D01812FDF1808AB9F5BB17 /* AboutView.swift */,
+				E8EEA26433FF83A03655EBE4 /* Assets.xcassets */,
+				F4D1A59BCD452CB36929B17A /* ContentView.swift */,
+				2511B4B19DCB3312B321ED56 /* PrivacyInfo.xcprivacy */,
+				AFD9D035F8A33167FC32629D /* ThermalPrintApp.swift */,
+				A21D33E43D9E197517BAC23E /* Model */,
+			);
+			path = ThermalPrint;
+			sourceTree = "<group>";
+		};
+		312884CDE6379E821A69B647 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C513BF499623E5CDB74629FE /* ThermalPrint.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A21D33E43D9E197517BAC23E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AABDF8F19C9BB8FBB913FBDC /* AppInfo.swift */,
+				C65BEB073EDB04EA3283D1FC /* BitmapCore.swift */,
+				43BF9682F6872C457272FA16 /* BitmapRenderer.swift */,
+				13E5DC94E82DD68AAF47B90C /* MXW01Protocol.swift */,
+				51AF50264CA71EB7FB0C0603 /* PrinterManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		ACFD76AE6E6A2C51A95187DB = {
+			isa = PBXGroup;
+			children = (
+				20E657AC80B828F3AFD47950 /* ThermalPrint */,
+				312884CDE6379E821A69B647 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5CD8282DF9D47C2DCCB43799 /* ThermalPrint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2B64963312CA364F05A74CC /* Build configuration list for PBXNativeTarget "ThermalPrint" */;
+			buildPhases = (
+				84F672DB25BDBBA9B771F9E3 /* Sources */,
+				DD632A43CA220DE06504E125 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ThermalPrint;
+			packageProductDependencies = (
+			);
+			productName = ThermalPrint;
+			productReference = C513BF499623E5CDB74629FE /* ThermalPrint.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		153BF7B2FD3A5480FFAE7C4F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					5CD8282DF9D47C2DCCB43799 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2964DAF9AB04AB45606341B7 /* Build configuration list for PBXProject "ThermalPrint" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = ACFD76AE6E6A2C51A95187DB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 312884CDE6379E821A69B647 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5CD8282DF9D47C2DCCB43799 /* ThermalPrint */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DD632A43CA220DE06504E125 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E0575245E44450BEAC638AD /* Assets.xcassets in Resources */,
+				CDD82EFE164F405814D638FA /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		84F672DB25BDBBA9B771F9E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43ACC37AD06DD1E1A81B663A /* AboutView.swift in Sources */,
+				343092A59B2C884775171868 /* AppInfo.swift in Sources */,
+				D1371F390C7B6FD69358D3D6 /* BitmapCore.swift in Sources */,
+				1CC06C48316C7007F8DFB71F /* BitmapRenderer.swift in Sources */,
+				61044FC2AD35E1C5142DA452 /* ContentView.swift in Sources */,
+				16B3B8ADCF0A2EA91A0976B7 /* MXW01Protocol.swift in Sources */,
+				57C86F68FE8E3246EDAC59F6 /* PrinterManager.swift in Sources */,
+				BC6D11B3513A287DF8ED3283 /* ThermalPrintApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4A25EEE27304EECEA5169BB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6C8ED4839469EFDABE67D8B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ThermalPrint uses Bluetooth to find and print to your MXW01 thermal printer.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.sklar.thermalprint;
+				PRODUCT_NAME = ThermalPrint;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		76D7EEC6D7D41ACE740FC092 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.2.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		85EFB4B9D7E621618B665BFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ThermalPrint uses Bluetooth to find and print to your MXW01 thermal printer.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.sklar.thermalprint;
+				PRODUCT_NAME = ThermalPrint;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2964DAF9AB04AB45606341B7 /* Build configuration list for PBXProject "ThermalPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A25EEE27304EECEA5169BB5 /* Debug */,
+				76D7EEC6D7D41ACE740FC092 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2B64963312CA364F05A74CC /* Build configuration list for PBXNativeTarget "ThermalPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C8ED4839469EFDABE67D8B0 /* Debug */,
+				85EFB4B9D7E621618B665BFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 153BF7B2FD3A5480FFAE7C4F /* Project object */;
+}
