@@ -17,7 +17,7 @@ struct ContentView: View {
     @State private var image: UIImage?
     @State private var fileName: String?
     @State private var settings = RenderSettings()
-    @State private var intensity: Double = Double(MXW01.defaultIntensity)   // 175
+    @State private var intensity: Double = 255   // Darkness default, tuned for photos
     @State private var rendered: RenderedBitmap?
     @State private var preview: UIImage?
     @State private var pickerItem: PhotosPickerItem?
@@ -25,17 +25,13 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 18) {
-                    connectionRow
-                    previewCard
-                    photoRow
-                    controls
-                    printButton
-                    statusRow
-                }
-                .padding()
+            VStack(spacing: 12) {
+                previewCard
+                controls
+                printButton
+                statusRow
             }
+            .padding()
             .navigationTitle("ThermalPrint")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -70,29 +66,6 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Connection
-
-    private var connectionRow: some View {
-        HStack(spacing: 10) {
-            Circle()
-                .fill(printer.connectionOK ? Color.green
-                      : (printer.isConnected ? Color.orange : Color.secondary))
-                .frame(width: 9, height: 9)
-            Text(printer.connectionText)
-                .font(.subheadline)
-                .foregroundStyle(printer.connectionOK ? Color.green : Color.secondary)
-                .lineLimit(1)
-            Spacer()
-            Button {
-                printer.connectAndRefresh()
-            } label: {
-                Label("Connect", systemImage: "arrow.clockwise")
-            }
-            .buttonStyle(.bordered)
-            .disabled(printer.busy)
-        }
-    }
-
     // MARK: - Preview
 
     private var previewCard: some View {
@@ -106,17 +79,37 @@ struct ContentView: View {
                     .scaledToFit()
                     .padding(10)
             } else {
-                VStack(spacing: 12) {
-                    Image(systemName: "photo.on.rectangle.angled")
-                        .font(.system(size: 44))
-                        .foregroundStyle(.tertiary)
-                    Text("Choose a photo to print")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                // Empty state: the whole card is the photo picker.
+                PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
+                    VStack(spacing: 12) {
+                        Image(systemName: "photo.on.rectangle.angled")
+                            .font(.system(size: 44))
+                            .foregroundStyle(.tertiary)
+                        Text("Tap to choose a photo")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
         }
-        .frame(height: 360)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .overlay(alignment: .topTrailing) {
+            if image != nil {
+                // Loaded state: a compact button to swap in a different photo.
+                PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
+                    Image(systemName: "photo.badge.plus")
+                        .font(.system(size: 16, weight: .semibold))
+                        .frame(width: 40, height: 40)
+                        .background(.thinMaterial, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .padding(12)
+                .accessibilityLabel("Choose a different photo")
+            }
+        }
         .overlay(alignment: .bottomLeading) {
             if image != nil {
                 transformButton(system: "rotate.right", label: "Rotate 90° clockwise") { rotate() }
@@ -142,25 +135,6 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
-    }
-
-    // MARK: - Photo picker
-
-    private var photoRow: some View {
-        HStack {
-            PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
-                Label("Choose Photo", systemImage: "photo")
-            }
-            .buttonStyle(.bordered)
-            Spacer()
-            if let fileName {
-                Text(fileName)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-            }
-        }
     }
 
     // MARK: - Controls
@@ -212,10 +186,15 @@ struct ContentView: View {
 
     private var statusRow: some View {
         HStack(spacing: 8) {
+            Circle()
+                .fill(printer.connectionOK ? Color.green
+                      : (printer.isConnected ? Color.orange : Color.secondary))
+                .frame(width: 9, height: 9)
             if printer.busy { ProgressView().controlSize(.small) }
-            Text(printer.statusLine)
+            Text(printer.statusLine.isEmpty ? printer.connectionText : printer.statusLine)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
             Spacer()
         }
         .frame(minHeight: 20)

@@ -13,14 +13,16 @@
 
 import Foundation
 
-/// The knobs exposed in the UI, matching the macOS app's defaults.
+/// The knobs exposed in the UI. Defaults are tuned for readable photos on
+/// thermal paper (darker, higher-contrast than the macOS app; the Darkness
+/// default lives with the intensity state in ContentView).
 struct RenderSettings: Equatable {
     var dither: Bool = true
     var rotation: Int = 0        // clockwise degrees: 0/90/180/270
     var mirror: Bool = false     // horizontal flip, applied after rotation
     var invert: Bool = false
-    var contrast: Double = 1.35
-    var brightness: Double = 1.0
+    var contrast: Double = 1.75
+    var brightness: Double = 0.65
 }
 
 /// A finished 1-bit bitmap: `black[y*width + x]` is true where a dot burns.
