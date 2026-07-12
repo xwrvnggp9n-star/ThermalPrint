@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ThermalPrint — print photos on an MXW01 thermal printer from your Mac</title>
-<meta name="description" content="A free, notarized macOS app that prints photos to MXW01 Bluetooth thermal printers. Dithering, rotation, mirroring, a Share-menu extension, and auto-update.">
+<meta name="description" content="A free, notarized macOS app that prints photos to MXW01 Bluetooth thermal printers. Dithering, rotation, mirroring, a Share-menu extension, and auto-update. An iPhone &amp; iPad version is coming soon to the App Store.">
 <meta property="og:title" content="ThermalPrint for macOS">
 <meta property="og:description" content="Print photos to an MXW01 Bluetooth thermal printer from your Mac.">
 <meta property="og:image" content="https://thermalprint.sklar.app/screenshot.png">
@@ -81,6 +81,34 @@
   }
   .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .25rem; }
   .card p { font-size: .9rem; color: var(--muted); }
+  section.ios {
+    margin-top: 3.5rem;
+    display: flex; flex-wrap: wrap; gap: 2rem;
+    align-items: center;
+  }
+  .ios-copy { flex: 1 1 280px; }
+  .ios-copy h2 { margin-bottom: .6rem; }
+  .ios-copy p { color: var(--muted); }
+  .pill {
+    display: inline-block;
+    font-size: .72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .07em;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
+    padding: .25rem .7rem; border-radius: 980px;
+    margin-bottom: .9rem;
+  }
+  .btn-soon {
+    background: var(--border); color: var(--muted);
+    cursor: default; margin-top: 1.3rem;
+  }
+  .btn-soon:hover { filter: none; }
+  .ios-shot { flex: 0 0 auto; margin: 0 auto; }
+  .ios-shot img {
+    width: 240px; max-width: 62vw; height: auto;
+    border-radius: 34px;
+    box-shadow: 0 14px 44px rgba(0,0,0,.20);
+  }
   .reqs { margin-top: 2.5rem; font-size: .9rem; color: var(--muted); }
   footer {
     margin-top: 4rem; padding: 1.5rem;
@@ -122,6 +150,24 @@
         <p>Drop a photo on the window or the Dock icon. The printer is found automatically and remembered.</p></div>
       <div class="card"><h3>Signed &amp; self-updating</h3>
         <p>Developer ID signed and notarized by Apple; the app checks for updates and installs them in place.</p></div>
+    </div>
+  </section>
+
+  <section class="ios">
+    <div class="ios-copy">
+      <span class="pill">iPhone &amp; iPad</span>
+      <h2>ThermalPrint goes mobile</h2>
+      <p>The same true-to-paper preview and dialed-in dithering, now in your
+      pocket. Choose a photo, see the exact 1-bit bitmap the printer will
+      produce, and print over Bluetooth — no account, no sign-in, no data
+      collection.</p>
+      <!-- App Store listing pending review. When it's live, replace the span
+           below with: <a class="btn" href="APP_STORE_URL">Download on the App Store</a> -->
+      <span class="btn btn-soon">Coming soon to the App&nbsp;Store</span>
+    </div>
+    <div class="ios-shot">
+      <img src="ios-screenshot.png" width="1320" height="2868"
+        alt="ThermalPrint on iPhone: a calibration card dithered to 1-bit black and white in the live preview, above darkness, brightness, contrast, and dither controls.">
     </div>
   </section>
 
