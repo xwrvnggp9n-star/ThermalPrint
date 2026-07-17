@@ -3,8 +3,8 @@
 //  ThermalPrint
 //
 //  The iOS counterpart of the macOS About panel: app identity, author credit,
-//  contact / website / GitHub links, and a support link. Presented as a sheet
-//  from the nav-bar info button.
+//  and contact / website / GitHub links. Presented as a sheet from the
+//  nav-bar info button.
 //
 
 import SwiftUI
@@ -25,7 +25,7 @@ struct AboutView: View {
                         Text(AppInfo.name).font(.title2.bold())
                         Text("Version \(AppInfo.displayVersion)")
                             .font(.subheadline).foregroundStyle(.secondary)
-                        Text("Print photos to an MXW01 Bluetooth thermal printer.")
+                        Text("Print photos to an inexpensive Bluetooth \u{201C}cat printer.\u{201D}")
                             .font(.callout)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.secondary)
@@ -45,12 +45,6 @@ struct AboutView: View {
                     }
                     Link(destination: AppInfo.githubURL) {
                         LabeledContent("Source") { Text("GitHub") }
-                    }
-                }
-
-                Section {
-                    Link(destination: AppInfo.supportURL) {
-                        Label("Support this project ☕", systemImage: "cup.and.saucer")
                     }
                 }
 

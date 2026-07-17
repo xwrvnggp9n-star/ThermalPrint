@@ -26,13 +26,19 @@ Character limits noted per field; counts below are within limit.
 
 ---
 
+> **De-branding note (App Review 5.2.1):** the July 2026 rejection cited use of the
+> "MXW01" brand name without manufacturer authorization. All copy below has been
+> rewritten to describe the hardware generically (a 384-pixel "cat printer"–style
+> Bluetooth thermal printer) with no brand name. Do not reintroduce "MXW01" into any
+> App Store field.
+
 ## Promotional text (max 170)
 
-> Print your photos on an inexpensive MXW01 Bluetooth thermal printer, straight from your iPhone or iPad. What you see in the preview is exactly what prints.
+> Print your photos on an inexpensive Bluetooth thermal printer, straight from your iPhone or iPad. What you see in the preview is exactly what prints.
 
 ## Description (max 4000)
 
-> ThermalPrint turns your photos into crisp thermal prints on the MXW01 family of inexpensive Bluetooth "cat printer" thermal printers — right from your iPhone or iPad.
+> ThermalPrint turns your photos into crisp thermal prints on inexpensive 384-pixel Bluetooth "cat printer"–style thermal printers — right from your iPhone or iPad.
 >
 > WHAT YOU SEE IS WHAT PRINTS
 > The preview is the exact 384-pixel, 1-bit bitmap the printer receives. No surprises between the screen and the paper.
@@ -46,20 +52,20 @@ Character limits noted per field; counts below are within limit.
 > - No account, no sign-in, no data collection.
 >
 > WORKS WITH
-> The MXW01 family of Bluetooth thermal printers. A companion macOS app is available at thermalprint.sklar.app.
+> Common 384-pixel Bluetooth thermal printers of the low-cost "cat printer" type. A companion macOS app is available at thermalprint.sklar.app.
 >
 > ThermalPrint collects no data and includes no tracking. It talks only to your printer, over Bluetooth.
 
 ## Keywords (max 100, comma-separated, no spaces after commas for max density)
 
 ```
-thermal printer,MXW01,cat printer,photo print,bluetooth,dither,receipt printer,mini printer,384
+thermal printer,cat printer,photo print,bluetooth,dither,receipt printer,mini printer,384,label
 ```
-(93 chars)
+(95 chars)
 
 ## What's New (version notes, max 4000) — for v1.0 first release
 
-> First release of ThermalPrint for iPhone and iPad. Print photos to your MXW01 Bluetooth thermal printer with a true-to-paper preview and adjustable dithering.
+> First release of ThermalPrint for iPhone and iPad. Print photos to an inexpensive Bluetooth thermal printer with a true-to-paper preview and adjustable dithering.
 
 ---
 
@@ -91,11 +97,14 @@ thermal printer,MXW01,cat printer,photo print,bluetooth,dither,receipt printer,m
 
 ## App Review Information (IMPORTANT — hardware dependency)
 
-Reviewers will NOT have an MXW01 printer. Apps that need special hardware get rejected when the reviewer can't exercise them, so spell this out in the "Notes" field:
+Reviewers will NOT have the printer. The July 2026 review (Guideline 2.1) explicitly
+asked for a **demo video** showing a physical Apple device pairing with and printing to
+the hardware — this is now REQUIRED, not optional. Put the video link in the "Notes"
+field and reply to the App Review message once it's added.
 
-> ThermalPrint prints to an MXW01 Bluetooth thermal printer (external hardware not included with the app). A physical printer is NOT required to review the app: launch it, choose any photo, and the full UI — including the exact 1-bit print preview and the darkness/brightness/contrast/dither controls — works without a printer connected. The "Print" action is the only step that requires the paired hardware. Bluetooth permission is used solely to discover and send to the printer; no data is collected or transmitted anywhere else.
+> ThermalPrint prints to an inexpensive Bluetooth thermal printer (external hardware not included with the app). A physical printer is NOT required to exercise the app UI: launch it, choose any photo, and the full interface — including the exact 1-bit print preview and the darkness/brightness/contrast/dither controls — works without a printer connected. The "Print" action is the only step that requires the paired hardware. A demo video of a real print on a physical iPhone is provided here: <PASTE VIDEO URL>. Bluetooth permission is used solely to discover and send to the printer; no data is collected or transmitted anywhere else.
 
-- Consider attaching a short **demo video** of a real print, since review can't reproduce it. (I can help script/record one.)
+- **Demo video (Guideline 2.1 — REQUIRED):** must show, on a *physical* iPhone/iPad (not a simulator): (1) the app's initial Bluetooth pairing with the printer, and (2) the full workflow — pick a photo → preview → print → paper coming out. Host it somewhere with a stable link (YouTube unlisted, or the thermalprint.sklar.app site) and paste the URL above.
 - **Demo account:** not applicable (no login).
 
 ---

@@ -13,7 +13,7 @@ options:
 settings:
   base:
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "3"
     SWIFT_VERSION: "5.0"
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: "5Y3S9Y6Z27"   # Apple Developer team (SANDOR WADE SKLAR); Xcode auto-manages signing
@@ -35,7 +35,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"
-        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "ThermalPrint uses Bluetooth to find and print to your MXW01 thermal printer."
+        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "ThermalPrint uses Bluetooth to find and print to your thermal printer."
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO   # no non-exempt crypto; clears the App Store compliance gate
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

@@ -340,7 +340,7 @@ final class PrinterManager: NSObject, ObservableObject {
         case PrinterError.bluetoothOff:  return "Turn on Bluetooth to connect to the printer."
         case PrinterError.unauthorized:  return "Bluetooth access is off. Enable it in Settings › ThermalPrint."
         case PrinterError.unsupported:   return "This device doesn't support Bluetooth LE."
-        case PrinterError.notFound:      return "No MXW01 printer found. Is it powered on?"
+        case PrinterError.notFound:      return "No printer found. Is it powered on?"
         case PrinterError.notReady(let t): return "Printer not ready: \(t)"
         case PrinterError.printRejected(let c): return "Print request rejected (code \(c))."
         case PrinterError.timeout:       return "The printer stopped responding."

@@ -16,7 +16,6 @@ enum AppInfo {
     static let contactEmail = "thermalprint@sklar.app"
     static let websiteURL = URL(string: "https://thermalprint.sklar.app")!
     static let githubURL = URL(string: "https://github.com/xwrvnggp9n-star/ThermalPrint")!
-    static let supportURL = URL(string: "https://buymeacoffee.com/sandysklar")!
 
     /// Marketing version from the running bundle, falling back to the constant.
     static var displayVersion: String {
